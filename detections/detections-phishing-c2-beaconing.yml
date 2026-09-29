@@ -1,0 +1,31 @@
+title: Repeated Proxy C2 Communication from One Host
+id: 018f32c0-2f4e-4df7-8c4e-44ac5d3a9cb1
+status: test
+description: Matches proxy events classified as C2 communication. Correlate three or more events by source IP within five minutes and verify process ancestry, destination, and timing.
+references:
+    - https://attack.mitre.org/techniques/T1071/001/
+    - https://sigmahq.io/sigma-specification/specification/sigma-correlation-rules-specification.html
+author: cyberingsecurity
+date: 2026-09-29
+logsource:
+    product: local_siem_lab
+    service: proxy
+    definition: Lab-normalized proxy records with source_type, event_type, source_ip, dest_ip, and mitre_technique fields.
+detection:
+    selection:
+        source_type: proxy
+        event_type: c2_communication
+    condition: selection
+fields:
+    - timestamp
+    - hostname
+    - source_ip
+    - dest_ip
+    - event_type
+    - mitre_technique
+falsepositives:
+    - Approved red-team exercises, malware-analysis sandboxes, or proxy detections incorrectly classified as C2.
+level: high
+tags:
+    - attack.command_and_control
+    - attack.t1071.001

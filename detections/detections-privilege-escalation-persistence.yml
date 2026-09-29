@@ -1,0 +1,60 @@
+title: Privilege Escalation and Persistence Indicators
+id: aad1da50-2a02-4a47-9402-41920fb5d34b
+status: test
+description: Matches privilege escalation, local account creation, scheduled-task persistence, or system-log clearing in the lab-normalized event stream. Correlate matches by host and review the full incident timeline.
+references:
+    - https://attack.mitre.org/techniques/T1068/
+    - https://attack.mitre.org/techniques/T1136/001/
+    - https://attack.mitre.org/techniques/T1053/005/
+    - https://attack.mitre.org/techniques/T1070/002/
+    - https://sigmahq.io/sigma-specification/specification/sigma-rules-specification.html
+author: cyberingsecurity
+date: 2026-09-29
+logsource:
+    product: local_siem_lab
+    service: endpoint
+    definition: Lab-normalized endpoint and auth records exposing source_type, event_type, mitre_technique, hostname, and username.
+detection:
+    selection_privilege_escalation:
+        source_type: endpoint
+        event_type: privilege_escalation
+        mitre_technique: T1068
+    selection_account_creation:
+        source_type: auth
+        event_type: account_created
+        mitre_technique: T1136.001
+    selection_scheduled_task:
+        source_type: endpoint
+        event_type: process_execution
+        mitre_technique: T1053.005
+    selection_log_clearing:
+        source_type: endpoint
+        event_type: process_execution
+        mitre_technique: T1070.002
+    selection_file_deletion:
+        source_type: endpoint
+        event_type: process_execution
+        mitre_technique: T1070.004
+    condition: 1 of selection_*
+fields:
+    - timestamp
+    - hostname
+    - source_ip
+    - username
+    - event_type
+    - process_name
+    - parent_process
+    - command_line
+    - file_path
+    - mitre_technique
+falsepositives:
+    - Authorized administration, software installation, scheduled-task changes, or log maintenance; validate the actor and change record.
+level: high
+tags:
+    - attack.privilege_escalation
+    - attack.t1068
+    - attack.persistence
+    - attack.t1136.001
+    - attack.t1053.005
+    - attack.defense_evasion
+    - attack.t1070.002
